@@ -1,4 +1,4 @@
-# GitHub Repo Setup
+dit # GitHub Repo Setup
 
 Follow this walkthrough to setup your GitHub repo.
 
