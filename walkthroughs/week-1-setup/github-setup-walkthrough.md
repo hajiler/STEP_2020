@@ -90,7 +90,7 @@ git config credential.helper store
 
 You should now see this code in your repo on GitHub!
 
-## Add Collaborators
+### Add Collaborators
 
 You'll be sending the code you write to your host for review, so your host
 needs access to your repo.
