@@ -26,3 +26,6 @@ function addRandomGreeting() {
   const greetingContainer = document.getElementById('greeting-container');
   greetingContainer.innerText = greeting;
 }
+function openLinkedIn(){
+    window.open("www.linkedin.com/in/elijahrrb");
+}
