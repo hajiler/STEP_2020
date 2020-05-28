@@ -27,6 +27,6 @@ function addRandomGreeting() {
   greetingContainer.innerText = greeting;
 }
 
-function openLinkedIn(){
-    window.open("https://linkedin.com/in/elijahrrb");
+function openLinked(link){
+    window.open(link);
 }
