@@ -27,6 +27,6 @@ function addRandomGreeting() {
   greetingContainer.innerText = greeting;
 }
 
-function openLinked(link){
+function openLink(link){
     window.open(link);
 }
