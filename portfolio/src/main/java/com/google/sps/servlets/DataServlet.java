@@ -29,6 +29,11 @@ public class DataServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     comments = new ArrayList<>();
+    comments.add("These");
+    comments.add("are");
+    comments.add("test");
+    comments.add("comments");
+    
     response.setContentType("text/html;");
     response.getWriter().println("Hello I am Elijah!");
   }
