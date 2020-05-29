@@ -26,11 +26,13 @@ function addRandomGreeting() {
   const greetingContainer = document.getElementById('greeting-container');
   greetingContainer.innerText = greeting;
 }
-
+git 
 function openLink(link){
     window.open(link);
 }
 
 function getHello() {
-    fetch('/data').then(response => response.text())
+    fetch('/data').then(response => response.text()).then((greeting) => {
+        document.getElementById("greet-message").innerText = greeting;
+    });
 }
