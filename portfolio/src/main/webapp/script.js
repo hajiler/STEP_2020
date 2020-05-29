@@ -32,5 +32,5 @@ function openLink(link){
 }
 
 function getHello() {
-    
+    fetch('/data').then(response => response.text())
 }
