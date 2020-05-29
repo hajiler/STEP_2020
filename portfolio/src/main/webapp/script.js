@@ -30,3 +30,7 @@ function addRandomGreeting() {
 function openLink(link){
     window.open(link);
 }
+
+function getHello() {
+    
+}
