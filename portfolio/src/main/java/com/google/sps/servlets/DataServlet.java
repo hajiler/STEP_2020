@@ -34,9 +34,12 @@ public class DataServlet extends HttpServlet {
     comments.add("test");
     comments.add("comments");
 
-    String json = {"[{"};
-    
+    String json = "[";
+    for (String comment : comments)
+      json = json.concat("comment: " + comment + "},");
+    json = json.concat("]");
+
     response.setContentType("text/html;");
-    response.getWriter().println("Hello I am Elijah!");
+    response.getWriter().println(json);
   }
 }
