@@ -33,13 +33,11 @@ function openLink(link){
 
 function getHello() {
   //Concatenates each comment to display on page
-  fetch('/data').then(response => response.json()).then((comments) => {
-    var comments_text = '';
-    for (index in comments.comments) {
-      comments_text = comments_text.concat(comments.comments[index], '\n');
-    }
-    document.getElementById("greet-message").innerText = comments_text;
-    
+  fetch('/data').then(response => response.json()).then((jsonComments) => {
+    const commentList = document.getElementById("greet-message");
+    jsonComments.comments.forEach((comment) => {
+      commentList.append(createListElement(comment.value));
+    })
   });
 }
 
