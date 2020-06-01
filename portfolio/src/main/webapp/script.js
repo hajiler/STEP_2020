@@ -34,12 +34,10 @@ function openLink(link){
 function getHello() {
   //Concatenates each comment to display on page
   fetch('/data').then(response => response.json()).then((comments) => {
-    var comments_text = '';
-    for (index in comments.comments) {
-      comments_text = comments_text.concat(comments.comments[index], '\n');
-    }
-    document.getElementById("greet-message").innerText = comments_text;
-    
+    const commentList = document.getElementById("greet-message");
+    comments.comments.forEach((index) => {
+      commentList.append(createListElement(comments.comments[index]));
+    })
   });
 }
 
