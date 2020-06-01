@@ -42,7 +42,7 @@ public class DataServlet extends HttpServlet {
     json = "".concat(json.substring(0, json.length() - 1) + "]}");
 
     
-    response.setContentType("text/html;");
+    response.setContentType("application/json;");
     response.getWriter().println(json);
   }
 }
