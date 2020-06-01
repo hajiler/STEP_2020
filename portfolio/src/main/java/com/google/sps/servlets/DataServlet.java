@@ -25,22 +25,15 @@ import java.util.ArrayList;
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
-  private List<String> comments;
+  private List<String> comments = new ArrayList<>;
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    comments = new ArrayList<>();
-    comments.add("These");
-    comments.add("are");
-    comments.add("test");
-    comments.add("comments");
-
     String json = "{\"comments\": [";
     for (String comment : comments)
       json = json.concat("{\"comment\": \"" +  comment + "\" },");
     //replaces last comma with JSON enclosing bracket
     json = "".concat(json.substring(0, json.length() - 1) + "]}");
-
     
     response.setContentType("application/json;");
     response.getWriter().println(json);
