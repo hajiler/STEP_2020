@@ -36,7 +36,7 @@ function getHello() {
   fetch('/data').then(response => response.json()).then((jsonComments) => {
     const commentList = document.getElementById("greet-message");
     jsonComments.comments.forEach((comment) => {
-      commentList.append(createListElement(comment.value));
+      commentList.appendChild(createListElement(comment.value));
     })
   });
 }
