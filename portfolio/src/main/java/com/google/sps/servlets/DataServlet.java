@@ -34,10 +34,11 @@ public class DataServlet extends HttpServlet {
     comments.add("test");
     comments.add("comments");
 
-    String json = "[";
+    String json = "{\"comments\": [";
     for (String comment : comments)
-      json = json.concat("comment: " + comment + "},");
-    json = json.concat("]");
+      json = json.concat("{\"comment\": \"" +  comment + "\" },");
+    //replaces last comma with JSON enclosing bracket
+    json = "".concat(json.substring(0, json.length() - 1) + "]}");
 
     
     response.setContentType("text/html;");
