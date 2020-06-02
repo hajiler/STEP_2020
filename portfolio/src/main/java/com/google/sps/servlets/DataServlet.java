@@ -31,7 +31,7 @@ public class DataServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String json = "{\"comments\": [";
     for (String comment : comments)
-      json = json.concat("{\"comment\": \"" +  comment + "\" },");
+      json = json.concat("{\"value\": \"" +  comment + "\" },");
     //replaces last comma with JSON enclosing bracket
     json = "".concat(json.substring(0, json.length() - 1) + "]}");
     
