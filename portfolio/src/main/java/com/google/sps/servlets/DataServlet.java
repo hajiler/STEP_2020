@@ -43,5 +43,6 @@ public class DataServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String comment = request.getParameter("Comment:");
     comments.add(comment);
+    response.sendRedirect("/index.html");
   }
 }
