@@ -71,6 +71,10 @@ public class DataServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
 
+    for (Entity entity : results.asIterable()){
+      comments.add((String) entity.getProperty("value"));
+    }
+
     return comments;
   }
 }
