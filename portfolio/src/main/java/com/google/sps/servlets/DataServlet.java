@@ -30,10 +30,11 @@ import java.util.ArrayList;
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
-  private List<String> comments = new ArrayList<>();
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    List<String> comments = getDatastoreComments();
+
     String json = "{\"comments\": [";
     for (String comment : comments)
       json = json.concat("{\"value\": \"" +  comment + "\" },");
@@ -49,7 +50,6 @@ public class DataServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String comment = request.getParameter("Comment:");
     long timeStamp = System.currentTimeMillis();
-    comments.add(comment);
 
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("value", comment);
@@ -59,5 +59,10 @@ public class DataServlet extends HttpServlet {
     datastore.put(commentEntity);
 
     response.sendRedirect("/index.html");
+  }
+
+  public List<String> getDatastoreComments() {
+    List<String> comments = new ArrayList<>();
+    return comments;
   }
 }
