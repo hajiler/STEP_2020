@@ -35,7 +35,7 @@ function getHello() {
   //Concatenates each comment to display on page
   fetch('/data').then(response => response.json()).then((jsonComments) => {
     const commentList = document.getElementById("greet-message");
-    jsonComments.comments.forEach((comment) => {
+    jsonComments.forEach((comment) => {
       commentList.appendChild(createListElement(comment.value));
     })
   });
