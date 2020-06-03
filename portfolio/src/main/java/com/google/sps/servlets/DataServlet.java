@@ -38,10 +38,11 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    int maxComments = request.getParameter("maxComments");
     Gson gson = new Gson();
     
     response.setContentType("application/json;");
-    response.getWriter().println(gson.toJson(getDatastoreComments()));
+    response.getWriter().println(gson.toJson(getDatastoreComments(maxComments)));
   }
 
   @Override
