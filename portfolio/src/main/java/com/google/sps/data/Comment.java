@@ -10,7 +10,8 @@ public final class Comment {
     this.value = comment;
     this.timeMillis = time;
   }
-  static Comment entityToComment(Entity comment) {
+
+  public static Comment entityToComment(Entity comment) {
     return new Comment((String) comment.getProperty("value"),(Long) comment.getProperty("timeMillis"));
   }
 }
