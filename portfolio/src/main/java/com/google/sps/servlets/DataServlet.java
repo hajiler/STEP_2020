@@ -14,6 +14,14 @@
 
 package com.google.sps.servlets;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.PreparedQuery;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -25,10 +33,11 @@ import java.util.ArrayList;
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
-  private List<String> comments = new ArrayList<>();
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    List<String> comments = getDatastoreComments();
+
     String json = "{\"comments\": [";
     for (String comment : comments)
       json = json.concat("{\"value\": \"" +  comment + "\" },");
@@ -37,13 +46,34 @@ public class DataServlet extends HttpServlet {
     
     response.setContentType("application/json;");
     response.getWriter().println(json);
-    response.sendRedirect("/index.html");
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String comment = request.getParameter("Comment:");
-    comments.add(comment);
+    long timeMillis = System.currentTimeMillis();
+
+    Entity commentEntity = new Entity("Comment");
+    commentEntity.setProperty("value", comment);
+    commentEntity.setProperty("timeMillis", timeMillis);
+
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    datastore.put(commentEntity);
+
     response.sendRedirect("/index.html");
+  }
+
+  public List<String> getDatastoreComments() {
+    List<String> comments = new ArrayList<>();
+
+    Query query = new Query("Comment").addSort("timeMillis", SortDirection.DESCENDING);
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    PreparedQuery results = datastore.prepare(query);
+
+    for (Entity entity : results.asIterable()){
+      comments.add((String) entity.getProperty("value"));
+    }
+
+    return comments;
   }
 }
