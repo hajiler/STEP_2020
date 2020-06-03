@@ -69,7 +69,7 @@ public class DataServlet extends HttpServlet {
 
     int count = 0;
     for (Entity entity : results.asIterable()){
-      if (count++ > maxComments){
+      if (count++ == maxComments){
         break;
       }
       comments.add(new Comment(entity.getProperty("value"), entity.getProperty("timeMillis")));
