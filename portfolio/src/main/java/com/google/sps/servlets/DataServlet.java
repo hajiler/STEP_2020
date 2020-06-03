@@ -67,7 +67,7 @@ public class DataServlet extends HttpServlet {
     PreparedQuery results = datastore.prepare(query);
 
     for (Entity entity : results.asIterable()){
-      comments.add(new Comment(entity.getProperty("value"), entity.getProperty("timeMillis")));
+      comments.add(Comment.entityToComment(entity));
     }
 
     return comments;
