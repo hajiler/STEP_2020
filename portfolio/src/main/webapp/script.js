@@ -35,7 +35,9 @@ function getComments() {
   //Concatenates each comment to display on page
   const query = '/data?maxComments='.concat(document.getElementById("max-comments").value);
   fetch(query).then(response => response.json()).then((jsonComments) => {
+    document.getElementById("display-comments").innerHTML = '';
     const commentList = document.getElementById("display-comments");
+
     jsonComments.forEach((comment) => {
       commentList.appendChild(createListElement(comment.value));
     })
