@@ -38,7 +38,7 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    int maxComments = request.getParameter("maxComments");
+    Integer maxComments = Integer.valueOf(request.getParameter("maxComments"));
     Gson gson = new Gson();
     
     response.setContentType("application/json;");
@@ -60,14 +60,18 @@ public class DataServlet extends HttpServlet {
     response.sendRedirect("/index.html");
   }
 
-  public List<Comment> getDatastoreComments() {
+  public List<Comment> getDatastoreComments(int maxComments) {
     List<Comment> comments = new ArrayList<>();
 
     Query query = new Query("Comment").addSort("timeMillis", SortDirection.DESCENDING);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
 
+    int count = 0;
     for (Entity entity : results.asIterable()){
+      if (count++ > maxComments){
+        break;
+      }
       comments.add(new Comment(entity.getProperty("value"), entity.getProperty("timeMillis")));
     }
 
