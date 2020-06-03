@@ -31,7 +31,7 @@ function openLink(link){
   window.open(link);
 }
 
-function getHello() {
+function getComments() {
   //Concatenates each comment to display on page
   const query = '/data?maxComments='.concat(document.getElementById("max-comments").value);
   fetch(query).then(response => response.json()).then((jsonComments) => {
