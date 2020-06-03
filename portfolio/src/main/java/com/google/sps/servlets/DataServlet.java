@@ -22,6 +22,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.sps.data.Comment;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -36,13 +37,7 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    List<String> comments = getDatastoreComments();
-
-    String json = "{\"comments\": [";
-    for (String comment : comments)
-      json = json.concat("{\"value\": \"" +  comment + "\" },");
-    //replaces last comma with JSON enclosing bracket
-    json = "".concat(json.substring(0, json.length() - 1) + "]}");
+    List<Comment> comments = getDatastoreComments();
     
     response.setContentType("application/json;");
     response.getWriter().println(json);
@@ -63,15 +58,15 @@ public class DataServlet extends HttpServlet {
     response.sendRedirect("/index.html");
   }
 
-  public List<String> getDatastoreComments() {
-    List<String> comments = new ArrayList<>();
+  public List<Comment> getDatastoreComments() {
+    List<Comment> comments = new ArrayList<>();
 
     Query query = new Query("Comment").addSort("timeStamp", SortDirection.DESCENDING);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
 
     for (Entity entity : results.asIterable()){
-      comments.add((String) entity.getProperty("value"));
+      comments.add(new Comment(entity.getProperty("value"), entity.getProperty("timeStamp")));
     }
 
     return comments;
