@@ -4,8 +4,8 @@ public final class Comment {
   private final String value;
   private final long timeStamp;
 
-  public Comment(String comment, long time){
-    this.value = comment;
-    this.timeStamp = time;
+  public Comment(Object comment, Object time){
+    this.value = (String) comment;
+    this.timeStamp = (Long) time;
   }
 }
