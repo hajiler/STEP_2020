@@ -42,7 +42,7 @@ function getHello() {
 }
 
 function deleteComments() {
-  const request = new Request('/delete-data',{method:'Post'});
+  const request = new Request('/delete-data', {method:'Post'});
   fetch(request).then(getHello());
 }
 
