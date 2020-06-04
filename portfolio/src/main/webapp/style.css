@@ -11,3 +11,19 @@ body {
 #greeting-container {
   margin-top: 20px;
 }
+
+#task-bar{
+  background-color: #808080;
+  overflow: hidden
+}
+
+#task-bar a {
+  float: left;
+  color: #F8F8F8;
+  text-align: center;
+  padding: 16px 18px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+
