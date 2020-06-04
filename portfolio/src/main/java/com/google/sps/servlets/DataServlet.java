@@ -31,6 +31,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /** Servlet that returns comments*/
 @WebServlet("/data")
@@ -43,6 +45,7 @@ public class DataServlet extends HttpServlet {
     
     response.setContentType("application/json;");
     response.getWriter().println(gson.toJson(getDatastoreComments(maxComments)));
+    System.out.println(gson.toJson(getDatastoreComments(maxComments)));
   }
 
   @Override
@@ -64,21 +67,21 @@ public class DataServlet extends HttpServlet {
     return commentEntity;
   }
 
-  public List<Comment> getDatastoreComments(int maxComments) {
-    List<Comment> comments = new ArrayList<>();
+  public Map<String, List<Comment>> getDatastoreComments(int maxComments) {
+    Map<String, List<Comment>> commentsByName = new HashMap<>();
 
     Query query = new Query("Comment").addSort("timeMillis", SortDirection.DESCENDING);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    PreparedQuery results = datastore.prepare(query);
 
-    int count = 0;
-    for (Entity entity : results.asIterable()){
-      if (count++ == maxComments){
-        break;
+    datastore.prepare(query).asIterable().forEach((entity)-> {
+      String name = (String) entity.getProperty("name");
+
+      if(!commentsByName.containsKey(name)) {
+        commentsByName.put(name, new ArrayList<Comment>());
       }
-      comments.add(Comment.fromEntity(entity));
-    }
+      commentsByName.get(name).add(Comment.fromEntity(entity));
+    });
 
-    return comments;
+    return commentsByName;
   }
 }
