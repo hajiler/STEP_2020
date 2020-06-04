@@ -74,7 +74,7 @@ public class DataServlet extends HttpServlet {
       if (count++ == maxComments){
         break;
       }
-      comments.add(Comment.entityToComment(entity));
+      comments.add(Comment.fromEntity(entity));
     }
 
     return comments;
