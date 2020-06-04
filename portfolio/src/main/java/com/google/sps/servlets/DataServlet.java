@@ -38,36 +38,43 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    Integer maxComments = Integer.valueOf(request.getParameter("maxComments"));
     Gson gson = new Gson();
     
     response.setContentType("application/json;");
-    response.getWriter().println(gson.toJson(getDatastoreComments()));
+    response.getWriter().println(gson.toJson(getDatastoreComments(maxComments)));
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String comment = request.getParameter("Comment:");
     long timeMillis = System.currentTimeMillis();
+    
+    //prevents adding empty comments to datastore
+    if (comment.length() != 0) {
+      Entity commentEntity = new Entity("Comment");
+      commentEntity.setProperty("value", comment);
+      commentEntity.setProperty("timeMillis", timeMillis);
 
-    Entity commentEntity = new Entity("Comment");
-    commentEntity.setProperty("value", comment);
-    commentEntity.setProperty("timeMillis", timeMillis);
-
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    datastore.put(commentEntity);
-
+      DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+      datastore.put(commentEntity);
+    }
     response.sendRedirect("/index.html");
   }
 
-  public List<Comment> getDatastoreComments() {
+  public List<Comment> getDatastoreComments(int maxComments) {
     List<Comment> comments = new ArrayList<>();
 
     Query query = new Query("Comment").addSort("timeMillis", SortDirection.DESCENDING);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
 
+    int count = 0;
     for (Entity entity : results.asIterable()){
-      comments.add(Comment.fromEntity(entity));
+      if (count++ == maxComments){
+        break;
+      }
+      comments.add(Comment.entityToComment(entity));
     }
 
     return comments;
