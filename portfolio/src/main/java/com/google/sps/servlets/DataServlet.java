@@ -55,13 +55,11 @@ public class DataServlet extends HttpServlet {
     response.sendRedirect("/comments.html");
   }
 
-  public Entity convertToEntity(request) {
-    String comment = request.getParameter("Comment:");
-    long timeMillis = System.currentTimeMillis();
-
+  public Entity convertToEntity(HttpServletRequest request) {
     Entity commentEntity = new Entity("Comment");
-    commentEntity.setProperty("value", comment);
-    commentEntity.setProperty("timeMillis", timeMillis);
+    commentEntity.setProperty("value", request.getParameter("Comment:"));
+    commentEntity.setProperty("name", request.getParameter("Name:"));
+    commentEntity.setProperty("timeMillis", System.currentTimeMillis());
 
     return commentEntity;
   }
