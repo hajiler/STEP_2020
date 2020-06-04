@@ -7,28 +7,30 @@
     <script src="/script.js"></script>
   </head>
   <body onload="getComments()">
-    <h1>Comments</h1>
-    <div id="task-bar">
-      <a href="index.html">Home</a>
-      <a href="https://linkedin.com/in/elijahrrb" target="_blank">LinkedIn</a>
-      <a href="/images/Resume_TAPIA.pdf" target="_blank">Resume</a>
-      <a href="comments.html">Comment Section</a>
-    </div>
-    <form action = "/data" method="Post">
-      <p>Leave Comment:</p>
-      <textarea name="Comment:"></textarea>
+    <div id="content">  
+      <h1>Comments</h1>
+      <div id="task-bar">
+        <a href="index.html">Home</a>
+        <a href="https://linkedin.com/in/elijahrrb" target="_blank">LinkedIn</a>
+        <a href="/images/Resume_TAPIA.pdf" target="_blank">Resume</a>
+        <a href="comments.html">Comment Section</a>
+      </div>
+      <form action = "/data" method="Post">
+        <p>Leave Comment:</p>
+        <textarea name="Comment:"></textarea>
+        <br></br>
+        <input type="submit">
+      </form>
       <br></br>
-      <input type="submit">
-    </form>
-    <br></br>
-    <label for="max-comments">Maximum Number of Comments:</label>
-    <select name="max-comments" id="max-comments" onchange="getComments()">
-      <option value = "3">3</option>
-      <option value = "5">5</option>
-      <option value = "10">10</option>
-    </select>  
-    <div id="display-comments"></div>
-    <br></br>
-    <button onclick="deleteComments()">Delete Comments</button>
+      <label for="max-comments">Maximum Number of Comments:</label>
+      <select name="max-comments" id="max-comments" onchange="getComments()">
+        <option value = "3">3</option>
+        <option value = "5">5</option>
+        <option value = "10">10</option>
+      </select>  
+      <div id="display-comments"></div>
+      <br></br>
+      <button onclick="deleteComments()">Delete Comments</button>
+    </div>
   </body>
 </html>
