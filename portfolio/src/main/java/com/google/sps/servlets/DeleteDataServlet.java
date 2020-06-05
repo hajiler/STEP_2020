@@ -22,7 +22,12 @@ public class DeleteDataServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     
     datastore.prepare(query).asIterable().forEach((entity) -> {
-      datastore.delete(entity.getKey());
+      //Evaluates if a particular comment's delete checkbox has been selected
+      Boolean doDelete = Boolean.valueOf(request.getParameter(String.valueOf(entity.getKey().getId())));
+      if (doDelete) {
+        datastore.delete(entity.getKey());
+      }
     });
+    response.sendRedirect("/comments.html");
   }
 }
