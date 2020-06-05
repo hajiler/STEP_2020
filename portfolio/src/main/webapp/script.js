@@ -32,15 +32,15 @@ function openLink(link){
 }
 
 function getComments() {
-  //Concatenates each comment to display on page
   const query = '/data?maxComments='.concat(document.getElementById("max-comments").value);
-  fetch(query).then(response => response.json()).then((jsonComments) => {
+  fetch(query).then(response => response.json()).then((jsonCommentMap) => {
+    const commentList = document.createElement('dl');
     document.getElementById("display-comments").innerHTML = '';
-    const commentList = document.getElementById("display-comments");
+    document.getElementById("display-comments").appendChild(commentList);
 
-    jsonComments.forEach((comment) => {
-      commentList.appendChild(createListElement(comment.value));
-    })
+    Object.keys(jsonCommentMap).forEach((name)=> {
+      commentList.append(userCommentsAsList(name, jsonCommentMap[name]));     
+    });
   });
 }
 
@@ -49,9 +49,20 @@ function deleteComments() {
   fetch(request).then(getHello());
 }
 
+//formats comments as sublists per specific user name
+function userCommentsAsList(name, comments) {
+  const user = document.createElement('dt');
+  user.innerText = name.concat(' has said:');
+  console.log(comments);
+  comments.forEach((comment)=> {
+    user.appendChild(createListElement(comment.propertyMap.value));
+  });
+  return user;
+}
+
 /** Creates an <li> element containing text. */
 function createListElement(text) {
-  const liElement = document.createElement('li');
+  const liElement = document.createElement('dd');
   liElement.innerText = text;
   return liElement;
 }

@@ -32,6 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /** Servlet that returns comments*/
 @WebServlet("/data")
@@ -48,29 +50,38 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String comment = request.getParameter("Comment:");
-    long timeMillis = System.currentTimeMillis();
-    
     //prevents adding empty comments to datastore
-    if (!comment.isEmpty()) {
-      Entity commentEntity = new Entity("Comment");
-      commentEntity.setProperty("value", comment);
-      commentEntity.setProperty("timeMillis", timeMillis);
-
+    if (!request.getParameter("Comment:").isEmpty()) {
       DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-      datastore.put(commentEntity);
+      datastore.put(convertToEntity(request));
     }
     response.sendRedirect("/comments.html");
   }
 
-  public List<Comment> getDatastoreComments(int maxComments) {
-    List<Comment> comments = new ArrayList<>();
+  public Entity convertToEntity(HttpServletRequest request) {
+    Entity commentEntity = new Entity("Comment");
+    commentEntity.setProperty("value", request.getParameter("Comment:"));
+    commentEntity.setProperty("author", request.getParameter("Name:"));
+    commentEntity.setProperty("timeMillis", System.currentTimeMillis());
+
+    return commentEntity;
+  }
+
+  public Map<String, List<Entity>> getDatastoreComments(int maxComments) {
+    Map<String, List<Entity>> commentsByName = new HashMap<>();
+
     Query query = new Query("Comment").addSort("timeMillis", SortDirection.DESCENDING);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    
+
     datastore.prepare(query).asList(FetchOptions.Builder.withLimit(maxComments)).forEach((entity)-> {
-      comments.add(Comment.entityToComment(entity));
+      String name = (String) entity.getProperty("name");
+
+      if(!commentsByName.containsKey(name)) {
+        commentsByName.put(name, new ArrayList<Entity>());
+      }
+      commentsByName.get(name).add(entity);
     });
-    return comments;
+
+    return commentsByName;
   }
 }
