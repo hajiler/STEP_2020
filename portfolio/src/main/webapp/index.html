@@ -6,12 +6,16 @@
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
   </head>
-  <body onload="getComments()">
+  <body>
     <div id="content">
       <h1>Elijah's Portfolio</h1>
       <img src="/images/profilePic.jpg" alt="Profile Image" width="200" height="200">
-      <button onclick="openLink('https://linkedin.com/in/elijahrrb')">LinkedIn</button>
-      <button onclick="openLink('/images/Resume_TAPIA.pdf')">Resume</button>
+      <div id="task-bar">
+        <a href="index.html">Home</a>
+        <a href="https://linkedin.com/in/elijahrrb" target="_blank">LinkedIn</a>
+        <a href="/images/Resume_TAPIA.pdf" target="_blank">Resume</a>
+        <a href="comments.html">Comment Section</a>
+      </div>
       <h4>Bio</h4>
       <p>I was born and raised in Chicago, Illinois. I currently live in Logan Square,
          and I study Computer Science at the Univerity of Illinois at Chicago. In my 
@@ -38,20 +42,6 @@
         <li>Early Research Scholars Program</li>
         <li>Guaranteed Professional Program Admission</li>
       </ul>    
-      <form action = "/data" method="Post">
-        <p>Leave Comment:</p>
-        <textarea name="Comment:"></textarea>
-        <br></br>
-        <input type="submit">
-      </form>
-      <label for="max-comments">Maximum Number of Comments:</label>
-      <select name="max-comments" id="max-comments" onchange="getComments()">
-        <option value = "3">3</option>
-        <option value = "5">5</option>
-        <option value = "10">10</option>
-      </select>  
-      <div id="display-comments"></div>
-      <button onclick="deleteComments()">Delete Comments</button>
     </div>
   </body>
 </html>

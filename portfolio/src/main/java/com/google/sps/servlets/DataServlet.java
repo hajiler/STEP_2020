@@ -60,12 +60,11 @@ public class DataServlet extends HttpServlet {
       DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
       datastore.put(commentEntity);
     }
-    response.sendRedirect("/index.html");
+    response.sendRedirect("/comments.html");
   }
 
   public List<Comment> getDatastoreComments(int maxComments) {
     List<Comment> comments = new ArrayList<>();
-
     Query query = new Query("Comment").addSort("timeMillis", SortDirection.DESCENDING);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     
