@@ -32,9 +32,11 @@
         <option value = "5">5</option>
         <option value = "10">10</option>
       </select>  
-      <div id="display-comments"></div>
-      <br></br>
-      <button onclick="deleteComments()">Delete Comments</button>
+      <form action="/delete-data" method="Post">
+        <div id="display-comments"></div>
+        <br></br>
+        <input type="submit" value="Delete Comments">
+      </form>
     </div>
   </body>
 </html>
