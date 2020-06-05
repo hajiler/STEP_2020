@@ -45,7 +45,6 @@ public class DataServlet extends HttpServlet {
     
     response.setContentType("application/json;");
     response.getWriter().println(gson.toJson(getDatastoreComments(maxComments)));
-    System.out.println(gson.toJson(getDatastoreComments(maxComments)));
   }
 
   @Override
