@@ -53,6 +53,7 @@ function deleteComments() {
 function userCommentsAsList(name, comments) {
   const user = document.createElement('dt');
   user.innerText = name.concat(' has said:');
+  console.log(comments);
   comments.forEach((comment)=> {
     user.appendChild(createElementFrom(comment));
   });
@@ -62,7 +63,7 @@ function userCommentsAsList(name, comments) {
 function createElementFrom(comment) {
   const liElement = document.createElement('dd');
   //formats comment string and corresponding checkbox to be one line
-  liElement.innerText = comment.value.concat("    ");
+  liElement.innerText = comment.propertyMap.value.concat("    ");
   liElement.innerHTML += createDeleteCheckBox(comment.key);
   return liElement;
 }
