@@ -22,6 +22,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.gson.Gson;
 import com.google.sps.data.Comment;
 import java.io.IOException;
@@ -50,7 +51,7 @@ public class DataServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     //prevents adding empty comments to datastore
-    if (request.getParameter("Comment:").length() != 0) {
+    if (!request.getParameter("Comment:").isEmpty()) {
       DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
       datastore.put(convertToEntity(request));
     }
@@ -72,7 +73,7 @@ public class DataServlet extends HttpServlet {
     Query query = new Query("Comment").addSort("timeMillis", SortDirection.DESCENDING);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-    datastore.prepare(query).asIterable().forEach((entity)-> {
+    datastore.prepare(query).asList(FetchOptions.Builder.withLimit(maxComments)).forEach((entity)-> {
       String name = (String) entity.getProperty("name");
 
       if(!commentsByName.containsKey(name)) {
