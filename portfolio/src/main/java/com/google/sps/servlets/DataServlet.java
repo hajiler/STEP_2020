@@ -22,6 +22,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.gson.Gson;
 import com.google.sps.data.Comment;
 import java.io.IOException;
@@ -51,7 +52,7 @@ public class DataServlet extends HttpServlet {
     long timeMillis = System.currentTimeMillis();
     
     //prevents adding empty comments to datastore
-    if (comment.length() != 0) {
+    if (!comment.isEmpty()) {
       Entity commentEntity = new Entity("Comment");
       commentEntity.setProperty("value", comment);
       commentEntity.setProperty("timeMillis", timeMillis);
@@ -64,19 +65,12 @@ public class DataServlet extends HttpServlet {
 
   public List<Comment> getDatastoreComments(int maxComments) {
     List<Comment> comments = new ArrayList<>();
-
     Query query = new Query("Comment").addSort("timeMillis", SortDirection.DESCENDING);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    PreparedQuery results = datastore.prepare(query);
-
-    int count = 0;
-    for (Entity entity : results.asIterable()){
-      if (count++ == maxComments){
-        break;
-      }
-      comments.add(Comment.fromEntity(entity));
-    }
-
+    
+    datastore.prepare(query).asList(FetchOptions.Builder.withLimit(maxComments)).forEach((entity)-> {
+      comments.add(Comment.entityToComment(entity));
+    });
     return comments;
   }
 }
