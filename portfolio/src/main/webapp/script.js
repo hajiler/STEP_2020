@@ -53,7 +53,6 @@ function deleteComments() {
 function userCommentsAsList(name, comments) {
   const user = document.createElement('dt');
   user.innerText = name.concat(' has said:');
-  console.log(comments);
   comments.forEach((comment)=> {
     user.appendChild(createElementFrom(comment));
   });
@@ -69,5 +68,7 @@ function createElementFrom(comment) {
 }
 
 function createDeleteCheckBox(key) {
-  return '<input type="checkbox" value='.concat('"' + key + '">')
+  const value = ' value="'.concat(key).concat('"');
+  const name = ' name="'.concat(key).concat('"');
+  return '<input type="checkbox"'.concat(value).concat(name).concat('>') 
 }
