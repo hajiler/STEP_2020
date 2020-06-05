@@ -54,14 +54,19 @@ function userCommentsAsList(name, comments) {
   const user = document.createElement('dt');
   user.innerText = name.concat(' has said:');
   comments.forEach((comment)=> {
-    user.appendChild(createListElement(comment.value));
+    user.appendChild(createElementFrom(comment));
   });
   return user;
 }
 
-/** Creates an <li> element containing text. */
-function createListElement(text) {
+function createElementFrom(comment) {
   const liElement = document.createElement('dd');
-  liElement.innerText = text;
+  //formats comment string and corresponding checkbox to be one line
+  liElement.innerText = comment.value.concat("    ");
+  liElement.innerHTML += createDeleteCheckBox(comment.key);
   return liElement;
+}
+
+function createDeleteCheckBox(key) {
+  return '<input type="checkbox" value='.concat('"' + key + '">')
 }
