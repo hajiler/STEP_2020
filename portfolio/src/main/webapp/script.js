@@ -53,8 +53,9 @@ function deleteComments() {
 function userCommentsAsList(name, comments) {
   const user = document.createElement('dt');
   user.innerText = name.concat(' has said:');
+  console.log(comments);
   comments.forEach((comment)=> {
-    user.appendChild(createListElement(comment.value));
+    user.appendChild(createListElement(comment.propertyMap.value));
   });
   return user;
 }

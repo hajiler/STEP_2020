@@ -61,14 +61,14 @@ public class DataServlet extends HttpServlet {
   public Entity convertToEntity(HttpServletRequest request) {
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("value", request.getParameter("Comment:"));
-    commentEntity.setProperty("name", request.getParameter("Name:"));
+    commentEntity.setProperty("author", request.getParameter("Name:"));
     commentEntity.setProperty("timeMillis", System.currentTimeMillis());
 
     return commentEntity;
   }
 
-  public Map<String, List<Comment>> getDatastoreComments(int maxComments) {
-    Map<String, List<Comment>> commentsByName = new HashMap<>();
+  public Map<String, List<Entity>> getDatastoreComments(int maxComments) {
+    Map<String, List<Entity>> commentsByName = new HashMap<>();
 
     Query query = new Query("Comment").addSort("timeMillis", SortDirection.DESCENDING);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -77,9 +77,9 @@ public class DataServlet extends HttpServlet {
       String name = (String) entity.getProperty("name");
 
       if(!commentsByName.containsKey(name)) {
-        commentsByName.put(name, new ArrayList<Comment>());
+        commentsByName.put(name, new ArrayList<Entity>());
       }
-      commentsByName.get(name).add(Comment.fromEntity(entity));
+      commentsByName.get(name).add(entity);
     });
 
     return commentsByName;
