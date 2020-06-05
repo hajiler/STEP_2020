@@ -22,6 +22,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.gson.Gson;
 import com.google.sps.data.Comment;
 import java.io.IOException;
@@ -38,38 +39,39 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    Integer maxComments = Integer.valueOf(request.getParameter("maxComments"));
     Gson gson = new Gson();
     
     response.setContentType("application/json;");
-    response.getWriter().println(gson.toJson(getDatastoreComments()));
+    response.getWriter().println(gson.toJson(getDatastoreComments(maxComments)));
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String comment = request.getParameter("Comment:");
     long timeMillis = System.currentTimeMillis();
+    
+    //prevents adding empty comments to datastore
+    if (!comment.isEmpty()) {
+      Entity commentEntity = new Entity("Comment");
+      commentEntity.setProperty("value", comment);
+      commentEntity.setProperty("timeMillis", timeMillis);
 
-    Entity commentEntity = new Entity("Comment");
-    commentEntity.setProperty("value", comment);
-    commentEntity.setProperty("timeMillis", timeMillis);
-
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    datastore.put(commentEntity);
-
+      DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+      datastore.put(commentEntity);
+    }
     response.sendRedirect("/index.html");
   }
 
-  public List<Comment> getDatastoreComments() {
+  public List<Comment> getDatastoreComments(int maxComments) {
     List<Comment> comments = new ArrayList<>();
 
     Query query = new Query("Comment").addSort("timeMillis", SortDirection.DESCENDING);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    PreparedQuery results = datastore.prepare(query);
-
-    for (Entity entity : results.asIterable()){
-      comments.add(Comment.fromEntity(entity));
-    }
-
+    
+    datastore.prepare(query).asList(FetchOptions.Builder.withLimit(maxComments)).forEach((entity)-> {
+      comments.add(Comment.entityToComment(entity));
+    });
     return comments;
   }
 }

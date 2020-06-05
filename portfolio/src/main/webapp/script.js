@@ -31,10 +31,13 @@ function openLink(link){
   window.open(link);
 }
 
-function getHello() {
+function getComments() {
   //Concatenates each comment to display on page
-  fetch('/data').then(response => response.json()).then((jsonComments) => {
-    const commentList = document.getElementById("greet-message");
+  const query = '/data?maxComments='.concat(document.getElementById("max-comments").value);
+  fetch(query).then(response => response.json()).then((jsonComments) => {
+    document.getElementById("display-comments").innerHTML = '';
+    const commentList = document.getElementById("display-comments");
+
     jsonComments.forEach((comment) => {
       commentList.appendChild(createListElement(comment.value));
     })
