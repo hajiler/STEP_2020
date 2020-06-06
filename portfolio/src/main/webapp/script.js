@@ -37,9 +37,7 @@ function getComments() {
     const commentList = document.createElement('dl');
     document.getElementById("display-comments").innerHTML = '';
     document.getElementById("display-comments").appendChild(commentList);
-    console.log(jsonCommentMap);
     Object.keys(jsonCommentMap).forEach((name)=> {
-      console.log(name);
       commentList.append(userCommentsAsList(name, jsonCommentMap[name]));     
     });
   });
@@ -62,7 +60,6 @@ function userCommentsAsList(name, comments) {
 
 function createElementFrom(comment) {
   const liElement = document.createElement('dd');
-  console.log(comment);
   //formats comment string and corresponding checkbox to be one line
   liElement.innerText = comment.propertyMap.value.concat("    ");
   liElement.innerHTML += createDeleteCheckBox(comment.key);

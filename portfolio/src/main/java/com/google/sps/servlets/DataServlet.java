@@ -31,8 +31,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /** Servlet that returns comments*/
 @WebServlet("/data")
@@ -49,29 +47,26 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String comment = request.getParameter("Comment:");
+    long timeMillis = System.currentTimeMillis();
+    
     //prevents adding empty comments to datastore
-    if (!request.getParameter("Comment:").isEmpty()) {
+    if (!comment.isEmpty()) {
+      Entity commentEntity = new Entity("Comment");
+      commentEntity.setProperty("value", comment);
+      commentEntity.setProperty("timeMillis", timeMillis);
+
       DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-      datastore.put(convertToEntity(request));
+      datastore.put(commentEntity);
     }
     response.sendRedirect("/comments.html");
   }
 
-  public Entity convertToEntity(HttpServletRequest request) {
-    Entity commentEntity = new Entity("Comment");
-    commentEntity.setProperty("value", request.getParameter("Comment:"));
-    commentEntity.setProperty("author", request.getParameter("Name:"));
-    commentEntity.setProperty("timeMillis", System.currentTimeMillis());
-
-    return commentEntity;
-  }
-
-  public Map<String, List<Entity>> getDatastoreComments(int maxComments) {
-    Map<String, List<Entity>> commentsByName = new HashMap<>();
-
+  public List<Comment> getDatastoreComments(int maxComments) {
+    List<Comment> comments = new ArrayList<>();
     Query query = new Query("Comment").addSort("timeMillis", SortDirection.DESCENDING);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
+    
     datastore.prepare(query).asList(FetchOptions.Builder.withLimit(maxComments)).forEach((entity)-> {
       String name = (String) entity.getProperty("author");
 
@@ -80,7 +75,6 @@ public class DataServlet extends HttpServlet {
       }
       commentsByName.get(name).add(entity);
     });
-
-    return commentsByName;
+    return comments;
   }
 }
