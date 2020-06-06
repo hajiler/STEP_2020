@@ -24,6 +24,7 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.gson.Gson;
+import com.google.sps.data.Comment;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -68,12 +69,7 @@ public class DataServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     
     datastore.prepare(query).asList(FetchOptions.Builder.withLimit(maxComments)).forEach((entity)-> {
-      String name = (String) entity.getProperty("author");
-
-      if(!commentsByName.containsKey(name)) {
-        commentsByName.put(name, new ArrayList<Entity>());
-      }
-      commentsByName.get(name).add(entity);
+      comments.add(Comment.entityToComment(entity));
     });
     return comments;
   }
