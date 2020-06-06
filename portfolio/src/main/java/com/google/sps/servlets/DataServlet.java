@@ -31,6 +31,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 /** Servlet that returns comments*/
 @WebServlet("/data")
@@ -62,19 +64,19 @@ public class DataServlet extends HttpServlet {
     response.sendRedirect("/comments.html");
   }
 
-  public List<Comment> getDatastoreComments(int maxComments) {
-    List<Comment> comments = new ArrayList<>();
+  public Map<String, List<Entity>> getDatastoreComments(int maxComments) {
+    Map<String, List<Entity>> commentsByName = new HashMap<>();
     Query query = new Query("Comment").addSort("timeMillis", SortDirection.DESCENDING);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    
+
     datastore.prepare(query).asList(FetchOptions.Builder.withLimit(maxComments)).forEach((entity)-> {
       String name = (String) entity.getProperty("author");
-
       if(!commentsByName.containsKey(name)) {
         commentsByName.put(name, new ArrayList<Entity>());
       }
       commentsByName.get(name).add(entity);
     });
-    return comments;
+
+    return commentsByName;
   }
 }
