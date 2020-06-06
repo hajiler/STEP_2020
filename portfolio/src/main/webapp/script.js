@@ -32,15 +32,14 @@ function openLink(link){
 }
 
 function getComments() {
-  //Concatenates each comment to display on page
   const query = '/data?maxComments='.concat(document.getElementById("max-comments").value);
-  fetch(query).then(response => response.json()).then((jsonComments) => {
+  fetch(query).then(response => response.json()).then((jsonCommentMap) => {
+    const commentList = document.createElement('dl');
     document.getElementById("display-comments").innerHTML = '';
-    const commentList = document.getElementById("display-comments");
-
-    jsonComments.forEach((comment) => {
-      commentList.appendChild(createListElement(comment.value));
-    })
+    document.getElementById("display-comments").appendChild(commentList);
+    Object.keys(jsonCommentMap).forEach((name)=> {
+      commentList.append(userCommentsAsList(name, jsonCommentMap[name]));     
+    });
   });
 }
 
@@ -49,9 +48,26 @@ function deleteComments() {
   fetch(request).then(getHello());
 }
 
-/** Creates an <li> element containing text. */
-function createListElement(text) {
-  const liElement = document.createElement('li');
-  liElement.innerText = text;
+//formats comments as sublists per specific user name
+function userCommentsAsList(name, comments) {
+  const user = document.createElement('dt');
+  user.innerText = name.concat(' has said:');
+  comments.forEach((comment)=> {
+    user.appendChild(createElementFrom(comment));
+  });
+  return user;
+}
+
+function createElementFrom(comment) {
+  const liElement = document.createElement('dd');
+  //formats comment string and corresponding checkbox to be one line
+  liElement.innerText = comment.propertyMap.value.concat("    ");
+  liElement.innerHTML += createDeleteCheckBox(comment.key);
   return liElement;
+}
+
+function createDeleteCheckBox(key) {
+  const value = ' value="'.concat('true').concat('"');
+  const name = ' name="'.concat(key.id).concat('"');
+  return '<input type="checkbox"'.concat(value).concat(name).concat('>') 
 }
