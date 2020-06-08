@@ -16,6 +16,10 @@ function loadCommentsPage() {
   getComments();
 }
 
+function getLoginStatus(){
+  document.getElementById("comment-form").style.display = "none";
+}
+
 function getComments() {
   const query = '/data?maxComments='.concat(document.getElementById("max-comments").value);
   fetch(query).then(response => response.json()).then((jsonCommentMap) => {
