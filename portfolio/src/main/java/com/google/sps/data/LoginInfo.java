@@ -13,9 +13,9 @@ public final class LoginInfo {
 
   public static LoginInfo getInfoFrom(UserService user) {
     if (user.isUserLoggedIn()) {
-      return new LoginInfo(true,user.createLoginURL("/login"));
+      return new LoginInfo(true, user.createLogoutURL("/comments.html"));
     } else {
-      return new LoginInfo(false, user.createLogoutURL("/login"));
+      return new LoginInfo(false, user.createLoginURL("/comments.html"));
     }
   }
 }
