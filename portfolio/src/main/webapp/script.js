@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+function loadCommentsPage() {
+  getComments();
+}
+
 function getComments() {
   const query = '/data?maxComments='.concat(document.getElementById("max-comments").value);
   fetch(query).then(response => response.json()).then((jsonCommentMap) => {
