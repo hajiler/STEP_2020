@@ -11,11 +11,11 @@ public final class LoginInfo {
     this.linkToAction = relevantLink;
   }
 
-  public static getInfoFrom(UserService user) {
+  public static LoginInfo getInfoFrom(UserService user) {
     if (user.isUserLoggedIn()) {
-      return new LoginInfo(true, user.getLoginLink());
+      return new LoginInfo(true,user.createLoginURL("/login"));
     } else {
-      return new LoginInfo(false, user.getLogoutLink());
+      return new LoginInfo(false, user.createLogoutURL("/login"));
     }
   }
 }
