@@ -23,6 +23,9 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.cloud.language.v1.Document;
+import com.google.cloud.language.v1.LanguageServiceClient;
+import com.google.cloud.language.v1.Sentiment;
 import com.google.gson.Gson;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
@@ -79,5 +82,14 @@ public class DataServlet extends HttpServlet {
     commentEntity.setProperty("author", request.getParameter("Name:"));
 
     return commentEntity;
+  }
+
+  public Float getSentimentScoreFrom(String comment) throws IOException{
+    Document doc =
+        Document.newBuilder().setContent(comment).setType(Document.Type.PLAIN_TEXT).build();
+    LanguageServiceClient languageService = LanguageServiceClient.create();
+    float score = languageService.analyzeSentiment(doc).getDocumentSentiment().getScore();
+    languageService.close();
+    return score;
   }
 }
