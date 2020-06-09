@@ -47,6 +47,22 @@ public class DataServlet extends HttpServlet {
     response.getWriter().println(gson.toJson(getDatastoreComments(maxComments)));
   }
 
+  public Map<String, List<Entity>> getDatastoreComments(int maxComments) {
+    Map<String, List<Entity>> commentsByName = new HashMap<>();
+    Query query = new Query("Comment").addSort("timeMillis", SortDirection.DESCENDING);
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+    datastore.prepare(query).asList(FetchOptions.Builder.withLimit(maxComments)).forEach((entity)-> {
+      String name = (String) entity.getProperty("author");
+      if(!commentsByName.containsKey(name)) {
+        commentsByName.put(name, new ArrayList<Entity>());
+      }
+      commentsByName.get(name).add(entity);
+    });
+
+    return commentsByName;
+  }
+
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String comment = request.getParameter("Comment:");
@@ -63,21 +79,5 @@ public class DataServlet extends HttpServlet {
       datastore.put(commentEntity);
     }
     response.sendRedirect("/comments.html");
-  }
-
-  public Map<String, List<Entity>> getDatastoreComments(int maxComments) {
-    Map<String, List<Entity>> commentsByName = new HashMap<>();
-    Query query = new Query("Comment").addSort("timeMillis", SortDirection.DESCENDING);
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
-    datastore.prepare(query).asList(FetchOptions.Builder.withLimit(maxComments)).forEach((entity)-> {
-      String name = (String) entity.getProperty("author");
-      if(!commentsByName.containsKey(name)) {
-        commentsByName.put(name, new ArrayList<Entity>());
-      }
-      commentsByName.get(name).add(entity);
-    });
-
-    return commentsByName;
   }
 }
