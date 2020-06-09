@@ -90,12 +90,12 @@ public class DataServlet extends HttpServlet {
     return commentEntity;
   }
 
-  private final Float getSentimentScoreFrom(String comment) throws IOException{
+  private final Integer getSentimentScoreFrom(String comment) throws IOException{
     Document doc =
         Document.newBuilder().setContent(comment).setType(Document.Type.PLAIN_TEXT).build();
     LanguageServiceClient languageService = LanguageServiceClient.create();
     float score = languageService.analyzeSentiment(doc).getDocumentSentiment().getScore();
     languageService.close();
-    return score;
+    return Math.round(score);
   }
 }
