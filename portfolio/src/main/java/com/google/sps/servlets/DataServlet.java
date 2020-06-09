@@ -66,18 +66,21 @@ public class DataServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String comment = request.getParameter("Comment:");
-    long timeMillis = System.currentTimeMillis();
     
     //prevents adding empty comments to datastore
     if (!comment.isEmpty()) {
-      Entity commentEntity = new Entity("Comment");
-      commentEntity.setProperty("value", comment);
-      commentEntity.setProperty("timeMillis", timeMillis);
-      commentEntity.setProperty("author", request.getParameter("Name:"));
-
       DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-      datastore.put(commentEntity);
+      datastore.put(getCommentEntityFrom(request));
     }
     response.sendRedirect("/comments.html");
+  }
+
+  public Entity getCommentEntityFrom(HttpServletRequest request) {
+    Entity commentEntity = new Entity("Comment");
+    commentEntity.setProperty("value", request.getParameter("Comment:"));
+    commentEntity.setProperty("timeMillis", System.currentTimeMillis(););
+    commentEntity.setProperty("author", request.getParameter("Name:"));
+
+    return commentEntity;
   }
 }
