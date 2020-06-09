@@ -12,6 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+function loadCommentsPage() {
+  getComments();
+  getLoginStatus();
+}
+
+function getLoginStatus(){
+  fetch('/login').then(response => response.json()).then((jsonLoginInfo) => {
+    const changeLoginLink = document.getElementById("user-action"); 
+    if (jsonLoginInfo.loginStatus) {
+      document.getElementById("comment-form").style.display = "block";
+      changeLoginLink.innerText = "Logout";
+    } else {
+      document.getElementById("comment-form").style.display = "none";
+      changeLoginLink.innerText = "Login";
+    }
+    changeLoginLink.href = jsonLoginInfo.linkToAction;
+  });
+}
+
 function getComments() {
   const query = '/data?maxComments='.concat(document.getElementById("max-comments").value);
   fetch(query).then(response => response.json()).then((jsonCommentMap) => {
