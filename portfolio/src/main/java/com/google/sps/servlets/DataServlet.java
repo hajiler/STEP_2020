@@ -50,7 +50,7 @@ public class DataServlet extends HttpServlet {
     response.getWriter().println(gson.toJson(getDatastoreComments(maxComments)));
   }
 
-  public Map<String, List<Entity>> getDatastoreComments(int maxComments) {
+  private final Map<String, List<Entity>> getDatastoreComments(int maxComments) {
     Map<String, List<Entity>> commentsByName = new HashMap<>();
     Query query = new Query("Comment").addSort("timeMillis", SortDirection.DESCENDING);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -75,7 +75,7 @@ public class DataServlet extends HttpServlet {
     response.sendRedirect("/comments.html");
   }
 
-  public Entity getCommentEntityFrom(HttpServletRequest request) {
+  private final Entity getCommentEntityFrom(HttpServletRequest request) {
     Entity commentEntity = new Entity("Comment");
     String comment = request.getParameter("Comment:");
 
@@ -90,7 +90,7 @@ public class DataServlet extends HttpServlet {
     return commentEntity;
   }
 
-  public Float getSentimentScoreFrom(String comment) throws IOException{
+  private final Float getSentimentScoreFrom(String comment) throws IOException{
     Document doc =
         Document.newBuilder().setContent(comment).setType(Document.Type.PLAIN_TEXT).build();
     LanguageServiceClient languageService = LanguageServiceClient.create();
