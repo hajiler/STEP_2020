@@ -65,10 +65,8 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String comment = request.getParameter("Comment:");
-    
     //prevents adding empty comments to datastore
-    if (!comment.isEmpty()) {
+    if (!request.getParameter("Comment:").isEmpty()) {
       DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
       datastore.put(getCommentEntityFrom(request));
     }
