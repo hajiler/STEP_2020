@@ -77,10 +77,16 @@ public class DataServlet extends HttpServlet {
 
   public Entity getCommentEntityFrom(HttpServletRequest request) {
     Entity commentEntity = new Entity("Comment");
-    commentEntity.setProperty("value", request.getParameter("Comment:"));
+    String comment = request.getParameter("Comment:");
+
+    commentEntity.setProperty("value", comment);
     commentEntity.setProperty("timeMillis", System.currentTimeMillis());
     commentEntity.setProperty("author", request.getParameter("Name:"));
-
+    try {
+      commentEntity.setProperty("sentiment", getSentimentScoreFrom(comment));
+    } catch (IOException e) {
+      commentEntity.setProperty("sentiment", null);
+    }
     return commentEntity;
   }
 
