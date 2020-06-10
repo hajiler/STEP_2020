@@ -16,10 +16,30 @@ package com.google.sps;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.Map;
 
 public final class FindMeetingQuery {
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
-    throw new UnsupportedOperationException("TODO: Implement this method.");
+    Collection<TimeRange> possibleTimes = new ArrayList();
+    AtomicReference<TimeRange> lastInvalidTime = new AtomicReference<>();
+    lastInvalidTime.set(TimeRange.fromStartDuration(0,0));
+    events.stream()
+    .collect(Collectors.toMap(Event::getWhen, event->event))
+    .forEach((when,event) -> {
+      if (!areAnyAttendeeBusy(event,request)) {
+        possibleTimes.add(TimeRange.fromStartEnd(lastInvalidTime.get().end(), event.getWhen().start(), false));
+      } else {
+        TimeRange newInvalidTime = getInvalidTime(lastInvalidTime.get(), event.getWhen(), request); 
+        if (newInvalidTime == event.getWhen()) {
+          possibleTimes.add(TimeRange.fromStartEnd(lastInvalidTime.get().end(), event.getWhen().start(), false));
+        }
+        lastInvalidTime.set(newInvalidTime);
+      }
+    });
+
+    return possibleTimes;
   }
 
   public Boolean areAnyAttendeeBusy(Event event, MeetingRequest request) {
