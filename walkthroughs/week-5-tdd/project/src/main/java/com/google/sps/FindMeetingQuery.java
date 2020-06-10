@@ -18,19 +18,18 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public final class FindMeetingQuery {
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
     Collection<TimeRange> possibleTimes = new ArrayList();
-    TimeRange lastTime = events.stream()
-    .filter(event -> areAnyAttendeeBusy(event, request))
-    .map(Event::getWhen)
+    Stream.concat(events.stream()
+    	.filter(event -> areAnyAttendeeBusy(event, request))
+    	.map(Event::getWhen), Stream.of(TimeRange.fromStartDuration(TimeRange.END_OF_DAY+1, 0)))
     .sorted(TimeRange.ORDER_BY_START)
     .reduce(TimeRange.fromStartDuration(0, 0), (previous, current) -> 
-      getInvalidTime(previous, current, request, possibleTimes)
+      mergeTimes(previous, current, request, possibleTimes)
     );
-    getInvalidTime(lastTime, TimeRange.fromStartDuration(TimeRange.END_OF_DAY+1, 0), request, possibleTimes); 
-    
 
     return possibleTimes;
   }
@@ -43,8 +42,9 @@ public final class FindMeetingQuery {
       .isEmpty();
   }
 
-  //Evaluates an invalid timerange based on if the current range intersects with most recent invalid time block
-  public TimeRange getInvalidTime(TimeRange previous, TimeRange current, MeetingRequest request, Collection<TimeRange> possibleTimes) {
+  //Merges two invalid times based on their overlap
+  //If gap between two times is succifient, append to possibleTimes
+  public TimeRange mergeTimes(TimeRange previous, TimeRange current, MeetingRequest request, Collection<TimeRange> possibleTimes) {
     if (current.overlaps(previous)){
       //Sub-Case 1: Time ranges are the same
       if (previous == current) {
@@ -65,6 +65,7 @@ public final class FindMeetingQuery {
     if (timeInBetween.duration() < request.getDuration()) {
       return TimeRange.fromStartEnd(previous.start(), current.end(), true);
     }
+    //gap between times is succifiently large
     possibleTimes.add(timeInBetween);
     return current;
   }
