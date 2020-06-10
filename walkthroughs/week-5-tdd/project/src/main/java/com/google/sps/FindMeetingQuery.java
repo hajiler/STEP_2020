@@ -15,9 +15,18 @@
 package com.google.sps;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 public final class FindMeetingQuery {
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
     throw new UnsupportedOperationException("TODO: Implement this method.");
+  }
+
+  public Boolean areAnyAttendeeBusy(Event event, MeetingRequest request) {
+    return event.getAttendees()
+      .stream()
+      .filter(attendee->request.getAttendees().contains(attendee))
+      .collect(Collectors.toList())
+      .isEmpty();
   }
 }
