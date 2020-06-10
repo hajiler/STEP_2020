@@ -29,4 +29,29 @@ public final class FindMeetingQuery {
       .collect(Collectors.toList())
       .isEmpty();
   }
+
+  //Evaluates an invalid timerange based on if the current range intersects with most recent invalid time block
+  public TimeRange getInvalidTime(TimeRange previous, TimeRange current, MeetingRequest request) {
+    if (current.overlaps(previous)){
+      //Sub-Case 1: Time ranges are the same
+      if (previous == current) {
+        return current;
+      }
+      //Sub-Case 2: One time range is subset of the other so return the larger time range
+      if (previous.contains(current)){
+        return previous;
+      } else if (current.contains(previous)) {
+        return current;
+      }
+      //Sub-case 3: Return the union of both time ranges
+      int start = Math.min(previous.start(), current.start());
+      int end = Math.max(previous.end(), current.end());
+      return TimeRange.fromStartEnd(start, end, false);
+    }
+    TimeRange timeInBetween = TimeRange.fromStartEnd(previous.end(), current.start(), true);
+    if (timeInBetween.duration() < request.getDuration()) {
+      return TimeRange.fromStartEnd(previous.start(), current.end(), true);
+    }
+    return current;
+  }
 }
