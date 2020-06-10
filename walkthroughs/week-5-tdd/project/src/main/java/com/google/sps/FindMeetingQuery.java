@@ -23,7 +23,7 @@ public final class FindMeetingQuery {
   }
 
   public Boolean areAnyAttendeeBusy(Event event, MeetingRequest request) {
-    return event.getAttendees()
+    return !event.getAttendees()
       .stream()
       .filter(attendee->request.getAttendees().contains(attendee))
       .collect(Collectors.toList())
