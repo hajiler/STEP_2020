@@ -22,7 +22,15 @@ import java.util.Map;
 public final class FindMeetingQuery {
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
     Collection<TimeRange> possibleTimes = new ArrayList();
-   
+    TimeRange lastTime = events.stream()
+    .filter(event -> areAnyAttendeeBusy(event, request))
+    .map(Event::getWhen)
+    .sorted(TimeRange.ORDER_BY_START)
+    .reduce(TimeRange.fromStartDuration(0, 0), (previous, current) -> 
+      getInvalidTime(previous, current, request, possibleTimes)
+    );
+    getInvalidTime(lastTime, TimeRange.fromStartDuration(TimeRange.END_OF_DAY+1, 0), request, possibleTimes); 
+    
 
     return possibleTimes;
   }
@@ -36,7 +44,7 @@ public final class FindMeetingQuery {
   }
 
   //Evaluates an invalid timerange based on if the current range intersects with most recent invalid time block
-  public TimeRange getInvalidTime(TimeRange previous, TimeRange current, MeetingRequest request) {
+  public TimeRange getInvalidTime(TimeRange previous, TimeRange current, MeetingRequest request, Collection<TimeRange> possibleTimes) {
     if (current.overlaps(previous)){
       //Sub-Case 1: Time ranges are the same
       if (previous == current) {
@@ -53,10 +61,11 @@ public final class FindMeetingQuery {
       int end = Math.max(previous.end(), current.end());
       return TimeRange.fromStartEnd(start, end, false);
     }
-    TimeRange timeInBetween = TimeRange.fromStartEnd(previous.end(), current.start(), true);
+    TimeRange timeInBetween = TimeRange.fromStartEnd(previous.end(), current.start(), false);
     if (timeInBetween.duration() < request.getDuration()) {
       return TimeRange.fromStartEnd(previous.start(), current.end(), true);
     }
+    possibleTimes.add(timeInBetween);
     return current;
   }
 }
