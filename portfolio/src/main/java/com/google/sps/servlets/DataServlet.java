@@ -23,6 +23,9 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.cloud.language.v1.Document;
+import com.google.cloud.language.v1.LanguageServiceClient;
+import com.google.cloud.language.v1.Sentiment;
 import com.google.gson.Gson;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
@@ -47,25 +50,7 @@ public class DataServlet extends HttpServlet {
     response.getWriter().println(gson.toJson(getDatastoreComments(maxComments)));
   }
 
-  @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String comment = request.getParameter("Comment:");
-    long timeMillis = System.currentTimeMillis();
-    
-    //prevents adding empty comments to datastore
-    if (!comment.isEmpty()) {
-      Entity commentEntity = new Entity("Comment");
-      commentEntity.setProperty("value", comment);
-      commentEntity.setProperty("timeMillis", timeMillis);
-      commentEntity.setProperty("author", request.getParameter("Name:"));
-
-      DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-      datastore.put(commentEntity);
-    }
-    response.sendRedirect("/comments.html");
-  }
-
-  public Map<String, List<Entity>> getDatastoreComments(int maxComments) {
+  private final Map<String, List<Entity>> getDatastoreComments(int maxComments) {
     Map<String, List<Entity>> commentsByName = new HashMap<>();
     Query query = new Query("Comment").addSort("timeMillis", SortDirection.DESCENDING);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -79,5 +64,38 @@ public class DataServlet extends HttpServlet {
     });
 
     return commentsByName;
+  }
+
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    //prevents adding empty comments to datastore
+    if (!request.getParameter("Comment:").isEmpty()) {
+      DatastoreServiceFactory.getDatastoreService().put(getCommentEntityFrom(request));
+    }
+    response.sendRedirect("/comments.html");
+  }
+
+  private final Entity getCommentEntityFrom(HttpServletRequest request) {
+    Entity commentEntity = new Entity("Comment");
+    String comment = request.getParameter("Comment:");
+
+    commentEntity.setProperty("value", comment);
+    commentEntity.setProperty("timeMillis", System.currentTimeMillis());
+    commentEntity.setProperty("author", request.getParameter("Name:"));
+    try {
+      commentEntity.setProperty("sentiment", getSentimentScoreFrom(comment));
+    } catch (IOException e) {
+      commentEntity.setProperty("sentiment", null);
+    }
+    return commentEntity;
+  }
+
+  private final Integer getSentimentScoreFrom(String comment) throws IOException{
+    Document doc =
+        Document.newBuilder().setContent(comment).setType(Document.Type.PLAIN_TEXT).build();
+    LanguageServiceClient languageService = LanguageServiceClient.create();
+    float score = languageService.analyzeSentiment(doc).getDocumentSentiment().getScore();
+    languageService.close();
+    return Math.round(score);
   }
 }

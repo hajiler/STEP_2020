@@ -60,8 +60,9 @@ function userCommentsAsList(name, comments) {
 
 function createElementFrom(comment) {
   const liElement = document.createElement('dd');
-  //formats comment string and corresponding checkbox to be one line
-  liElement.innerText = comment.propertyMap.value.concat("    ");
+  const line = comment.propertyMap.value.concat('  (', comment.propertyMap.sentiment, ')');
+  //formats comment line and corresponding checkbox to be one line
+  liElement.innerText = line.concat('     '); 
   liElement.innerHTML += createDeleteCheckBox(comment.key);
   return liElement;
 }
