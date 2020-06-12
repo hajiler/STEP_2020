@@ -18,13 +18,13 @@ function loadCommentsPage() {
 }
 
 function getLoginStatus(){
+  document.getElementById("comment-form").style.display = "none";
   fetch('/login').then(response => response.json()).then((jsonLoginInfo) => {
     const changeLoginLink = document.getElementById("user-action"); 
     if (jsonLoginInfo.loginStatus) {
       document.getElementById("comment-form").style.display = "block";
       changeLoginLink.innerText = "Logout";
     } else {
-      document.getElementById("comment-form").style.display = "none";
       changeLoginLink.innerText = "Login";
     }
     changeLoginLink.href = jsonLoginInfo.linkToAction;
