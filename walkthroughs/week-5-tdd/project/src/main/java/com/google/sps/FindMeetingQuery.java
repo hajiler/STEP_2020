@@ -17,27 +17,58 @@ package com.google.sps;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Stream;
 
 public final class FindMeetingQuery {
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
     Collection<TimeRange> possibleTimes = new ArrayList();
-    Stream.concat(events.stream()
-    	.filter(event -> areAnyAttendeeBusy(event, request))
-    	.map(Event::getWhen), Stream.of(TimeRange.fromStartDuration(TimeRange.END_OF_DAY+1, 0)))
-    .sorted(TimeRange.ORDER_BY_START)
-    .reduce(TimeRange.fromStartDuration(0, 0), (previous, current) -> 
-      mergeTimes(previous, current, request, possibleTimes)
-    );
-
+    if (!request.getAttendees().isEmpty()) {
+      Stream.concat(
+          events.stream()
+              .filter(event -> areAnyAttendeeBusy(event, request.getAttendees()))
+              .map(Event::getWhen), 
+          Stream.of(TimeRange.fromStartDuration(TimeRange.END_OF_DAY+1, 0)))
+          .sorted(TimeRange.ORDER_BY_START)
+          .reduce(
+              TimeRange.fromStartDuration(0, 0), 
+              (previous, current) -> mergeTimes(previous, current, request, possibleTimes));
+      Collection<TimeRange> timesWithOptionalAttendees = 
+          possibleTimes.stream()
+          .filter(time -> isFreeDuringTime(events, time, request.getOptionalAttendees()))
+          .collect(Collectors.toCollection(ArrayList::new));
+      if (!timesWithOptionalAttendees.isEmpty()) {
+        return timesWithOptionalAttendees;
+      }
+    } else {
+      Stream.concat(
+          events.stream()
+              .filter(event -> areAnyAttendeeBusy(event, request.getOptionalAttendees()))
+              .map(Event::getWhen), 
+          Stream.of(TimeRange.fromStartDuration(TimeRange.END_OF_DAY+1, 0)))
+          .sorted(TimeRange.ORDER_BY_START)
+          .reduce(
+              TimeRange.fromStartDuration(0, 0), 
+              (previous, current) -> mergeTimes(previous, current, request, possibleTimes));
+    }
+     
     return possibleTimes;
   }
 
-  public Boolean areAnyAttendeeBusy(Event event, MeetingRequest request) {
+  public Boolean isFreeDuringTime(Collection<Event> events, TimeRange timePossibility, Collection<String> attendees) {
+    return events.stream()
+        .filter(event->areAnyAttendeeBusy(event, attendees))
+        .map(Event::getWhen)
+        .filter(occupiedTime -> timePossibility.overlaps(occupiedTime))
+        .collect(Collectors.toList())
+        .isEmpty();
+  }
+
+  public Boolean areAnyAttendeeBusy(Event event, Collection<String> attendees) {
     return !event.getAttendees()
       .stream()
-      .filter(attendee->request.getAttendees().contains(attendee))
+      .filter(attendee-> attendees.contains(attendee))
       .collect(Collectors.toList())
       .isEmpty();
   }
